@@ -1,0 +1,66 @@
+/*layout*/
+.header-div, .footer-div {
+    width: 100%;
+    height: 20px;
+}
+.header-div{
+    background: linear-gradient(orange, white);
+
+}
+
+.container-fluid {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+header, footer {
+    width: 100%;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+/*global classes*/
+.flex-center {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.flex-center-item {
+
+}
+.blur-background{
+    box-shadow: 0 0 1rem rgba(0,0,0.9);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+}
+.content-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+/*site=>index*/
+.site-index-div {
+    position: relative;
+    height: 600px;
+}
+.site-index-div::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/media/main_page_img.jpg");
+    background-size: cover;
+    border-radius: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+    /*filter: blur(5px);*/
+    z-index: -1;
+}
+
+
+
+

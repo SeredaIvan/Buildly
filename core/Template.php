@@ -4,8 +4,13 @@ namespace core;
 
 class Template
 {
-    protected $templatePath;
+    public $templatePath;
     protected $params;
+    public function __set(string $name, $value)
+    {
+
+        Core::getInstance()->template->setParam($name,$value);
+    }
     public function __construct($templatePath)
     {
         $this->templatePath=$templatePath;
@@ -21,13 +26,17 @@ class Template
             $this->setParam($key,$value);
         }
     }
+    public function setTemplatePath($path)
+    {
+        $this->templatePath=$path;
+    }
     public function getHTML()
     {
         ob_start();
         extract($this->params);
-        include_once ($this->templatePath);
+        include ($this->templatePath);
         $str = ob_get_contents();
-        ob_clean();
+        ob_end_clean();
         return $str;
     }
     public function display()

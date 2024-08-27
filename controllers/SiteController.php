@@ -2,10 +2,12 @@
 
 namespace controllers;
 
-class SiteController
+use core\Controller;
+
+class SiteController extends Controller
 {
     public function actionIndex()
     {
-        echo "MainPage";
+        return $this->render();
     }
 }

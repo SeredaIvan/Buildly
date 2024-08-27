@@ -1,10 +1,10 @@
 <?php
+
 namespace controllers;
 
 use core\Controller;
-use core\Template;
 
-class RegistrationController extends Controller
+class LoginController extends Controller
 {
     public function actionIndex()
     {

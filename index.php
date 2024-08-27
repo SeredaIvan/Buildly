@@ -9,13 +9,14 @@ spl_autoload_register(static function ($className) {
 });
 
 if (isset($_GET['route'])){
-    $route=$_GET['route'];
-}
-else{
-    $route='';
+    $route = $_GET['route'];
+} else {
+    $route = '';
 }
 
-echo '<br>';
 
-$router = new core\Core($route);
-$router->run();
+\core\Config::getInstance();
+die;
+$core = \core\Core::getInstance();
+$core->run($route);
+$core->done();
