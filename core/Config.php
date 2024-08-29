@@ -30,7 +30,10 @@ class Config
     {
         $this->params[$name] = $value;
     }
-
+    public function __get($name)
+    {
+        return $this->params[$name];
+    }
 
     public static function getInstance()
     {

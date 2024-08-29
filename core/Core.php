@@ -10,10 +10,17 @@ class Core
     private static $instance;
     protected Router $router;
     public Template $template;
-
+    public $db;
 
     private function __construct() {
         $this->template = new Template($this->defaultPath);
+        /*$dbHost=Config::getInstance()->dbHost;
+        $dbName=Config::getInstance()->dbName;
+        $dbLogin=Config::getInstance()->dbLogin;
+        $dbPassword=Config::getInstance()->dbPassword;*/
+
+        $this->db=new DB(Config::getInstance()->dbHost,Config::getInstance()->dbName,Config::getInstance()->dbLogin,
+            Config::getInstance()->dbPassword);
     }
 
     public function run($route)
