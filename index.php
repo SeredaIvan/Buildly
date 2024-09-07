@@ -15,8 +15,7 @@ if (isset($_GET['route'])){
 }
 
 
-\core\Config::getInstance();
-die;
+
 $core = \core\Core::getInstance();
 $core->run($route);
 $core->done();

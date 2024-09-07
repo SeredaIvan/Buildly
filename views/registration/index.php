@@ -24,6 +24,10 @@
             <input type="password" class="form-control" id="floatingInputPass2" placeholder="">
             <label for="floatingInputPass2">Повторіть пароль</label>
         </div>
+        <div class="mb-2 form-floating">
+            <input type="number" class="form-control" id="floatingInputAge" placeholder="">
+            <label for="floatingInputAge">Введіть свій вік</label>
+        </div>
         <div class="mb-3">
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="role" value="user" id="radioUser">

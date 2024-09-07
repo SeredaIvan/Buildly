@@ -21,6 +21,7 @@ class Core
 
         $this->db=new DB(Config::getInstance()->dbHost,Config::getInstance()->dbName,Config::getInstance()->dbLogin,
             Config::getInstance()->dbPassword);
+
     }
 
     public function run($route)
