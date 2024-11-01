@@ -11,17 +11,14 @@ class Core
     protected Router $router;
     public Template $template;
     public $db;
+    public $session;
 
     private function __construct() {
+        session_start();
         $this->template = new Template($this->defaultPath);
-        /*$dbHost=Config::getInstance()->dbHost;
-        $dbName=Config::getInstance()->dbName;
-        $dbLogin=Config::getInstance()->dbLogin;
-        $dbPassword=Config::getInstance()->dbPassword;*/
-
         $this->db=new DB(Config::getInstance()->dbHost,Config::getInstance()->dbName,Config::getInstance()->dbLogin,
             Config::getInstance()->dbPassword);
-
+        $this->session=new Session();
     }
 
     public function run($route)

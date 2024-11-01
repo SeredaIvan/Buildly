@@ -40,7 +40,29 @@ header, footer {
     justify-content: center;
     text-align: center;
 }
+.site-add-task-div {
+    position: relative;
+    height: 600px;
+}
+.site-add-task-div::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/media/background-brick-wall-texture.jpg");
+    background-size: cover;
+    border-radius: 20px;
+    background-position: center;
+    background-repeat: no-repeat;
+    /*filter: blur(5px);*/
+    z-index: -1;
+}
+
+
 /*site=>index*/
+
 .site-index-div {
     position: relative;
     height: 600px;

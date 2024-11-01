@@ -9,7 +9,6 @@ class Router
     public function __construct($route)
     {
         $this->route = $route;
-
     }
 
     public function run()

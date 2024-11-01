@@ -4,11 +4,10 @@ namespace core;
 
 class Template
 {
-    public $templatePath;
+    private $templatePath;
     protected $params;
     public function __set(string $name, $value)
     {
-
         Core::getInstance()->template->setParam($name,$value);
     }
     public function __construct($templatePath)

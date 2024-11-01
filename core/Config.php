@@ -7,10 +7,13 @@ use Couchbase\KeyDeletedException;
 class Config
 {
     protected $params;
+    public $paramsCategories;
     private static $instance;
+
     private function __construct()
     {
         /** @var array $Config */
+        /** @var array $Categories */
         $dir = 'config';
         $files = scandir($dir);
         foreach ($files as $file) {
@@ -25,6 +28,8 @@ class Config
                 $this->params[$key]=$value;
             }
         }
+        //уніфікувати
+        $this->paramsCategories=$Categories;
     }
     public function __set(string $name, $value): void
     {

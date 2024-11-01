@@ -13,63 +13,22 @@ class DB
 
     public function insert($table, $fieldsAndValues)
     {
-        $columns = implode(', ', array_keys($fieldsAndValues));
+        try {
+            $columns = implode(', ', array_keys($fieldsAndValues));
+            $plugs = implode(', ', array_map(fn($key) => ":$key", array_keys($fieldsAndValues)));
+            $query = "INSERT INTO {$table} ({$columns}) VALUES ({$plugs})";
 
-        $plugs = implode(', ', array_map(fn($key) => ":$key", array_keys($fieldsAndValues)));
+            $smt = $this->pdo->prepare($query);
 
-        $query = "INSERT INTO {$table} ({$columns}) VALUES ({$plugs})";
+            foreach ($fieldsAndValues as $key => &$value) {
+                $smt->bindParam(":$key", $value);
+            }
 
-        $smt = $this->pdo->prepare($query);
-
-        foreach ($fieldsAndValues as $key => &$value) {
-            $smt->bindParam(":$key", $value);
+            $smt->execute();
+            return $this->pdo->lastInsertId();
+        } catch (\PDOException $e) {
+            return false;
         }
-
-        $smt->execute();
-
-        return $this->pdo->lastInsertId();
-    }
-
-    /**
-     * @param $table string
-     * @param $fields string|array
-     * @param $where array|bool associative array by type $associativeArray = ['field' => ['operator', 'value']],
-     * @param $or array|bool associative array by type $associativeArray = ['field' => ['operator', 'value'],*or* 'field2' => ['operator2', 'value2']]
-     * @param $and array|bool associative array by type $associativeArray = ['field' => ['operator', 'value'],*and* 'field2' => ['operator2', 'value2']]
-     * @return array
-     */
-    public function select($table, $fields, $where = false, $or = false, $and = false)
-    {
-        if (is_array($fields)) {
-            $fields = implode(', ', $fields);
-        } else if (!is_string($fields)) {
-            $fields = '*';
-        }
-
-        $query = "SELECT $fields FROM $table";
-        $params = [];
-
-        if ($where) {
-            $query = $this->whereTrue($query, $where, $params);
-        }
-
-        if ($and) {
-            $query = $this->andTrue($query, $and, $params);
-        }
-
-        if ($or) {
-            $query = $this->orTrue($query, $or, $params);
-        }
-
-        echo $query;
-        $stmt = $this->pdo->prepare($query);
-
-        foreach ($params as $key => &$value) {
-            $stmt->bindParam($key, $value);
-        }
-
-        $stmt->execute();
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function delete($table, $where = false, $id = false)
@@ -80,7 +39,6 @@ class DB
             $query .= "id = :id";
             $smt = $this->pdo->prepare($query);
             $smt->bindParam(':id', $id, \PDO::PARAM_INT);
-            echo 'HOH';
             return $smt->execute();
         }
         else {
@@ -93,60 +51,108 @@ class DB
                 $query .= "{$key} {$value[0]} :{$key}";
                 $smt = $this->pdo->prepare($query);
                 $smt->bindParam(":{$key}", $value[1]);
-                echo 'HOH';
                 return $smt->execute();
             }
             else {
                 $query .= "{$key} = :{$key}";
                 $smt = $this->pdo->prepare($query);
                 $smt->bindParam(":{$key}", $value);
-                echo 'HOH';
                 return $smt->execute();
             }
         }
     }
     public function update($table, $where, $updateData)
     {
-        $query = "UPDATE {$table} SET ";
+        try {
+            $query = "UPDATE {$table} SET ";
 
-        $updateFields = array_keys($updateData);
-        $setPart = [];
-        foreach ($updateFields as $field) {
-            $setPart[] = "{$field} = :{$field}";
-        }
-        $query .= implode(", ", $setPart);
-
-        $whereFields = array_keys($where);
-        $query .= " WHERE ";
-        $wherePart = [];
-        foreach ($whereFields as $field) {
-            if (is_array($where[$field])) {
-                $operator = $where[$field][0];
-                $value = $where[$field][1];
-                $wherePart[] = "{$field} {$operator} :where_{$field}";
-            } else {
-                $wherePart[] = "{$field} = :where_{$field}";
+            $updateFields = array_keys($updateData);
+            $setPart = [];
+            foreach ($updateFields as $field) {
+                $setPart[] = "{$field} = :{$field}";
             }
-        }
-        $query .= implode(" AND ", $wherePart);
+            $query .= implode(", ", $setPart);
 
-        $smt = $this->pdo->prepare($query);
-
-        foreach ($updateData as $field => &$value) {
-            $smt->bindParam(":{$field}", $value);
-        }
-
-        foreach ($where as $field => $condition) {
-            if (is_array($condition)) {
-                $smt->bindParam(":where_{$field}", $condition[1]);
+            if (is_numeric($where)) {
+                $query .= " WHERE id=:id";
+                $smt = $this->pdo->prepare($query);
+                $smt->bindParam(':id', $where);
+                return $smt->execute();
             } else {
-                $smt->bindParam(":where_{$field}", $condition);
-            }
-        }
+                $whereFields = array_keys($where);
+                $query .= " WHERE ";
+                $wherePart = [];
+                foreach ($whereFields as $field) {
+                    if (is_array($where[$field])) {
+                        $operator = $where[$field][0];
+                        $value = $where[$field][1];
+                        $wherePart[] = "{$field} {$operator} :where_{$field}";
+                    } else {
+                        $wherePart[] = "{$field} = :where_{$field}";
+                    }
+                }
+                $query .= implode(" AND ", $wherePart);
 
-        return $smt->execute();
+                $smt = $this->pdo->prepare($query);
+
+                foreach ($updateData as $field => &$value) {
+                    $smt->bindParam(":{$field}", $value);
+                }
+
+                foreach ($where as $field => $condition) {
+                    if (is_array($condition)) {
+                        $smt->bindParam(":where_{$field}", $condition[1]);
+                    } else {
+                        $smt->bindParam(":where_{$field}", $condition);
+                    }
+                }
+
+                return $smt->execute();
+            }
+        } catch (\PDOException $e) {
+            return false;
+        }
     }
 
+
+    /**
+     * @param $table string
+     * @param $fields string|array
+     * @param $where array|bool associative array by type $associativeArray = ['field' => ['operator', 'value']],
+     * @param $or array|bool associative array by type $associativeArray = ['field' => ['operator', 'value'],*or* 'field2' => ['operator2', 'value2']]
+     * @param $and array|bool associative array by type $associativeArray = ['field' => ['operator', 'value'],*and* 'field2' => ['operator2', 'value2']]
+     * @return array
+     */
+    public function select($table, $fields, $where = null, $or = null, $and = null)
+    {
+        if (is_array($fields)) {
+            $fields = implode(', ', $fields);
+        } else if (!is_string($fields)) {
+            $fields = '*';
+        }
+
+        $query = "SELECT $fields FROM $table";
+        $params = [];
+        if (!empty($where)) {
+            $query = $this->whereTrue($query, $where, $params);
+        }
+
+        if (!empty($and)) {
+            $query = $this->andTrue($query, $and, $params);
+        }
+
+        if (!empty($or)) {
+            $query = $this->orTrue($query, $or, $params);
+        }
+        $stmt = $this->pdo->prepare($query);
+
+        foreach ($params as $key => &$value) {
+            $stmt->bindParam($key, $value);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 
     private function orTrue($query, $or, &$params)
     {
@@ -192,27 +198,28 @@ class DB
 
         return $query;
     }
-
-
     private function whereTrue($query, $where, &$params)
     {
-        $i = 0;
         $query .= " WHERE ";
-
+        $i=0;
         foreach ($where as $key => $values) {
-            if (count($values) < 2) {
-                continue;
-            }
+            if (is_array($values)) {
+                if (count($values) < 2) {
+                    continue;
+                }
+                if ($i > 0) {
+                    $query .= " AND ";
+                }
 
-            if ($i > 0) {
-                $query .= " AND ";
+                $query .= "$key {$values[0]} :where_$key";
+                $params[":where_$key"] = $values[1];
+                $i++;
             }
-
-            $query .= "$key {$values[0]} :where_$key";
-            $params[":where_$key"] = $values[1];
-            $i++;
+            else{
+                $query .= "$key = :where_$key";
+                $params[":where_$key"] = $values;
+            }
         }
-
         return $query;
     }
 }
