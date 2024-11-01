@@ -13,6 +13,7 @@ use core\Model;
  * @property string $email
  * @property string $phone
  * @property int $age
+ * @property string $city
  * @property int $password
  * @property int $brigade_id foreign key
  * @property string|array $avatar
@@ -47,7 +48,7 @@ class User extends Model
     public static function GetUser(): ?self
     {
         if (self::IsLogged()) {
-            $userData = Core::getInstance()->session->get('user')[0];
+            $userData = Core::getInstance()->session->get('user');
             if (is_array($userData)) {
                 $user = new self();
                 foreach ($userData as $key => $value) {

@@ -59,6 +59,20 @@ class Worker extends Model
         }
         var_dump($filteredWorkers);
     }
+    public static function selectByUserId(int $userId)
+    {
+        $workerArr= self::selectByCondition(['id_user'=>['=',$userId]])[0];
+        $worker=new Worker();
+        $worker->id=$workerArr['id'];
+        $worker->id_user=$workerArr['id_user'];
+        $worker->categories=$workerArr['categories'];
+        $worker->pay_per_hour=$workerArr['pay_per_hour'];
+        return $worker;
+    }
+    public function getArrayCategories():array
+    {
+        return(explode(',',$this->categories));
+    }
 }
 
 

@@ -40,11 +40,25 @@ class WorkerController extends Controller
     public function actionFindAll()
     {
         $res= Worker::findAllWorkers();
-        var_dump($res);
     }
     public function actionFindByCategories()
     {
         $res= Worker::findAllWorkersByCondition('штукатурка',75);
         var_dump($res);
+    }
+    public static function findUserWorker():Worker|null
+    {
+        if(User::IsLogged()){
+            $user=User::GetUser();
+            $id=User::GetUser()->id;
+            if($user->IsWorker()&&!empty($id)) {
+                $worker=Worker::selectByUserId($id);
+                return $worker;
+            }
+        }
+        else{
+            return null;
+        }
+        return null;
     }
 }

@@ -28,6 +28,7 @@ class UsersController extends Controller
                     $user->email = $email;
                     $user->phone = $post->getOne('phone');
                     $user->age = $post->getOne('age');
+                    $user->city = $post->getOne('city');
                     $user->password = $post->getOne('password');
                     $user->role = $role ?: $post->getOne('role');
 

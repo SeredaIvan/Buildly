@@ -35,7 +35,7 @@ if (!empty($messages)) {
                 ";
                 $i=0;
                 foreach ($countRadio as $key=>$value) {
-                    $ucValue=$ucValue = mb_strtoupper(mb_substr($value, 0, 1, "UTF-8"), "UTF-8") . mb_substr($value, 1, null, "UTF-8");
+                    $ucValue = mb_strtoupper(mb_substr($value, 0, 1, "UTF-8"), "UTF-8") . mb_substr($value, 1, null, "UTF-8");
                     echo "
                         <div class='themed-grid-col text-start p-2 pb-3' >
                             <input class='form-check-input' type='radio' name='{$category}{$i}'' value='{$value}' id='radioUser{$i}{$category}'>

@@ -39,6 +39,10 @@ if(!empty($messages)){
             <input name="age" type="number" class="form-control" id="floatingInputAge" placeholder="">
             <label for="floatingInputAge">Введіть свій вік</label>
         </div>
+        <div class="mb-2 form-floating">
+            <input name="city" type="text" class="form-control" id="floatingInputCity" placeholder="Київ">
+            <label for="floatingInputCity">Введіть місто роботи</label>
+        </div>
         <div class="mb-3">
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="role" value="costumer" id="radioUser">
