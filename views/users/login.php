@@ -2,12 +2,7 @@
 
 ?>
 <?php
-$messages=\core\Messages::getMessages();
-if(!empty($messages)){
-    foreach ($messages as $mess){
-        echo $mess;
-    }
-}?>
+\core\Messages::writeMessages();?>
 <br>
 <div class="content-center">
     <div class="form-register">

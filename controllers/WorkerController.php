@@ -4,10 +4,12 @@ namespace controllers;
 
 use core\Controller;
 use core\Core;
+use core\Get;
 use core\Messages;
 use core\Post;
 use models\User;
 use models\Worker;
+use MongoDB\Driver\Server;
 
 class WorkerController extends Controller
 {
@@ -16,15 +18,16 @@ class WorkerController extends Controller
         if($this->isPost) {
             $post = new Post();
             $payPerHour = $post->getOne('pay_per_hour');
-            echo $payPerHour;
             $allData=$post->getAll();
             $categories=implode(',', array_slice(array_values($allData),1));
-            echo $categories;
-            echo User::GetUser()->id;
+            $user=User::GetUser();
             $worker= new Worker();
-            $worker->id_user=User::GetUser()->id;
+            $worker->id_user=$user->id;
+            echo $user->id;
+            $worker->id_brigade=null;
             $worker->pay_per_hour=$payPerHour;
             $worker->categories=$categories;
+            var_dump($worker);
             if ($worker->save()){
                 Core::getInstance()->session->set('is_register_worker',true);
                 $this->redirect("/");
@@ -39,12 +42,20 @@ class WorkerController extends Controller
     }
     public function actionFindAll()
     {
-        $res= Worker::findAllWorkers();
+        $workers=Worker::findAllWorkers();
+        return $this->render(['workers'=>$workers]);
     }
     public function actionFindByCategories()
     {
-        $res= Worker::findAllWorkersByCondition('штукатурка',75);
-        var_dump($res);
+        if($this->isGet){
+            $workers=Worker::findAllWorkers();
+            return $this->render(['workers'=>$workers]);
+        }
+        if($this->isPost){
+            $post = new Post();
+
+        }
+
     }
     public static function findUserWorker():Worker|null
     {

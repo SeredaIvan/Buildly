@@ -4,13 +4,7 @@ include_once 'config/config.php';
 
 // Ваша логіка для обробки форм та виводу
 $this->Title = 'Реєстрація спеціаліста';
-$messages = \core\Messages::getMessages();
-
-if (!empty($messages)) {
-    foreach ($messages as $mess) {
-        echo $mess;
-    }
-}
+\core\Messages::writeMessages();
 
 ?>
 <br>
@@ -24,9 +18,7 @@ if (!empty($messages)) {
                 <label for="floatingInputPayPerHour">Введіть бажану оплату за годину в грн</label>
             </div>
             <div class="content-center rounded-3 mb-3 mt-4 shadow p-3 border"> Виберіть категорії для пошуку роботи</div>
-            <?php $categories=\core\Config::getInstance()->paramsCategories[0];
-
-            ?>
+            <?php $categories=\core\Config::getInstance()->paramsCategories[0]; ?>
             <div class="row mb-3 mt-4 shadow rounded-3 ">
             <?php foreach($categories as $category=>$countRadio) {
 

@@ -1,3 +1,4 @@
+<?php $this->Title = 'Акаунт користувача';?>
 <style>
     .hover-shadow:hover {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -8,16 +9,29 @@
         <!--зробити перевірку на те що воркер дозареєструвався  session('is_register_worker')-->
     <?php
     $user = \models\User::GetUser();
-    if($user->IsWorker()){
-        $worker=\models\Worker::selectByUserId($user->id);
+    //$is_register_worker=\core\Core::getInstance()->session->get('is_register_worker');
+    if(!empty($user)&&$user->IsWorker()) {
+        $worker = \models\Worker::selectByUserId($user->id);
     }
     ?>
         <div class="row">
             <div class="col-lg-4">
                 <div class="card mb-4">
                     <div class="card-body text-center">
-                        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
-                             class="rounded-circle img-fluid" style="width: 150px;">
+                        <div id="avatar">
+                            <div id="avatar" class="position-relative">
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+                                     class="rounded-circle img-fluid" style="width: 150px;" id="avatarImg">
+                                <div id="divImg" class="hover-shadow-lg rounded-circle content-center" style="height: 60px;width: 60px ; background-color: white ;position: absolute; bottom: 5px; right: 5px;">
+                                    <img class=" " id="pencilImg" src="/media/pencil.svg" width="40" height="40" style=" background-color: white; display: none;">
+                                    <!--Інтегруй сюди форму для завантаження фото щоб вона з'являлась на onclick divImg та на PencilImg-->
+                                    <form id="uploadForm" style="display: none;" enctype="multipart/form-data">
+                                        <input type="file" id="fileInput" name="file" accept="image/*">
+                                        <button type="submit" class="btn btn-warning">Завантажити</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                         <h5 class="my-3"><?=$user->name;?> <?=$user->surname?></h5>
                         <p class="text-muted mb-1"><?=$user->about?></p>
                         <p class="text-muted mb-4">____</p>
@@ -28,6 +42,7 @@
                         <?php endif; ?>
                     </div>
                 </div>
+                <!--
                 <div class="card mb-4 mb-lg-0">
                     <div class="card-body p-0">
                         <ul class="list-group list-group-flush rounded-3">
@@ -39,21 +54,10 @@
                                 <i class="fab fa-github fa-lg text-body">Додати відгуки для воркера</i>
                                 <p class="mb-0"  style="color: red">!!!!!!!!</p>
                             </li>
-                            <!--<li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                                <p class="mb-0">@mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                                <p class="mb-0">mdbootstrap</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                                <p class="mb-0">mdbootstrap</p>
-                            </li>-->
                         </ul>
                     </div>
                 </div>
+                -->
             </div>
             <div class="col-lg-8">
                 <div class="card mb-4">
@@ -101,21 +105,34 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="row">
+                                <?php //зробити шаблони для моделей??
+                                if (!empty($worker)): ?>
                                 <div class="col-sm-2 content-center">
-                                    <p class="mb-0">Категорії</p>
+                                    <p class="mb-0"> Категорії </p>
                                 </div>
+
                                 <div class="col-sm-10">
+
                                     <div class="row">
-                                    <?php
-                                        $categories=$worker->getArrayCategories();
+                                        <?php
+                                        $categories = $worker->getArrayCategories();
                                         foreach ($categories as $category):
                                             $ucCategory = mb_strtoupper(mb_substr($category, 0, 1, "UTF-8"), "UTF-8") . mb_substr($category, 1, null, "UTF-8");
-                                    ?>
-                                        <div class="content-center p-1 border col-md-3 rounded-3 m-2 hover-shadow">
-                                            <span class="text-muted mb-0 " style="font-size: 12px"><?=$ucCategory?></span>
-                                        </div>
-                                    <?php endforeach;?>
+                                            ?>
+                                            <div class="content-center p-1 border col-md-3 rounded-3 m-2 hover-shadow">
+                                                <span class="text-muted mb-0 " style="font-size: 12px"><?=$ucCategory?></span>
+                                            </div>
+                                        <?php endforeach;?>
+
+                                </div>
+                                <?php elseif (empty($worker)):?>
+                                    <div class="col-sm-8 content-center">
+                                        <p class="mb-0"> Ви не завершили реєстрацію спеціаліста</p>
                                     </div>
+                                    <div class="col-sm-4">
+                                            <a class="btn btn-danger" href="/worker/workerRegisterInfo">Дореєструватись</a>
+                                    </div>
+                                <?php endif;?>
                                 </div>
                             </div>
                         </div>
@@ -123,6 +140,8 @@
                     <hr>
                 </div>
                 <?php endif;?>
+                <?php if (!empty($worker)):?>
+                <!--
                 <div class="row">
                     <div class="col-md-6">
                         <div class="card mb-4 mb-md-0">
@@ -190,8 +209,36 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>-->
+                <?php endif;?>
             </div>
         </div>
     </div>
 </section>
+<script defer>
+    let avatar = document.getElementById('avatar');
+    let divImg=document.getElementById('divImg');
+    let uploadForm = document.getElementById('uploadForm');
+    let fileInput = document.getElementById('fileInput');
+
+        let button=document.getElementById('pencilImg');
+    avatar.addEventListener('mouseover', () => {
+            divImg.style.backgroundColor = 'grey';
+            button.style.display = 'block';
+        });
+
+    avatar.addEventListener('mouseout', () => {
+            divImg.style.backgroundColor = '';
+            button.style.display = 'none';
+        });
+    divImg.addEventListener('onclick', () => {
+        uploadForm.style.display = 'block';
+        fileInput.click();
+    });
+    button.addEventListener('onclick', () => {
+        uploadForm.style.display = 'block';
+        fileInput.click();
+    });
+
+</script>
+

@@ -15,7 +15,6 @@ use core\Model;
  * @property int $age
  * @property string $city
  * @property int $password
- * @property int $brigade_id foreign key
  * @property string|array $avatar
  * @property string $about
  */
@@ -48,14 +47,11 @@ class User extends Model
     public static function GetUser(): ?self
     {
         if (self::IsLogged()) {
-            $userData = Core::getInstance()->session->get('user');
-            if (is_array($userData)) {
-                $user = new self();
-                foreach ($userData as $key => $value) {
-                    $user->$key = $value;
-                }
-                return $user;
-            }
+            $userData = Core::getInstance()->session->get('user')[0];
+
+            $user =new User();
+            $user->createObject($userData);
+            return $user;
         }
         return null;
     }

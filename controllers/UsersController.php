@@ -12,6 +12,7 @@ use models\User;
 
 class UsersController extends Controller
 {
+
     public function actionRegistration($role = null)
     {
         if ($this->isPost) {
@@ -23,6 +24,7 @@ class UsersController extends Controller
 
                 if (empty($userExists)) {
                     $user = new User();
+                    //подивитись чи можна зробити через CreateObject
                     $user->name = $post->getOne('name');
                     $user->surname = $post->getOne('surname');
                     $user->email = $email;
@@ -130,6 +132,11 @@ class UsersController extends Controller
     }
 
     public function actionView()
+    {
+        return $this->render();
+    }
+
+    public function actionGfgf()
     {
         return $this->render();
     }

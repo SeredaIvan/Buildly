@@ -25,24 +25,27 @@ class Controller
             $this->isGet=true;
         }
     }
-    public function render($path=null)
+    public function render($arr = null, $path = null)
     {
-        if(!empty($path)){
+        if (!empty($path)) {
             $this->smallTemplate->setTemplatePath($path);
         }
-        if(!empty($this->arrayMessages)){
-            var_dump($this->arrayMessages);
-            $messages=$this->arrayMessages;
-            $this->arrayMessages=[];
-            return ['Content'=>$this->smallTemplate->getHTML(),'Messages'=>$messages];
+        if (!empty($arr)) {
+            $this->smallTemplate->setParams($arr);
         }
-        return ['Content'=>$this->smallTemplate->getHTML()];
+        $messages = $this->arrayMessages;
+        $this->arrayMessages = [];
+
+        return [
+            'Content' => $this->smallTemplate->getHTML(),
+            'Messages' => $messages ?: null
+        ];
     }
+
     public function redirect($path)
     {
+        http_response_code(302);
         header("Location: {$path}");
-        die;
+        exit;
     }
-
-
 }

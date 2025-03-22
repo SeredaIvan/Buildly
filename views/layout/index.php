@@ -32,11 +32,7 @@ use core\Config;
                 <li><a href="/register/" class="nav-link px-2 link-dark">Стати спеціалістом</a></li>
             <?php elseif ($user->IsWorker()): ?>
                 <li><a href="#" class="nav-link px-2 link-dark">Знайти роботу</a></li>
-                <?php if (!empty($user->brigade)): ?>
-                    <li><a href="#" class="nav-link px-2 link-dark">Переглянути бригаду</a></li>
-                <?php else: ?>
-                    <li><a href="#" class="nav-link px-2 link-dark">Приєднатись до бригади</a></li>
-                <?php endif; ?>
+
             <?php elseif ($user->IsCostumer()): ?>
                 <li><a href="/worker/findAll" class="nav-link px-2 link-dark">Знайти спеціаліста</a></li>
                 <li><a href="/categories" class="nav-link px-2 link-dark">Категорії</a></li>
@@ -69,12 +65,7 @@ use core\Config;
 </div>
 
 <?php
-$messages = \core\Messages::getMessages();
-if (!empty($messages)) {
-    foreach ($messages as $mess) {
-        echo $mess;
-    }
-}
+\core\Messages::writeMessages();
 ?>
 
 <main>
@@ -83,7 +74,7 @@ if (!empty($messages)) {
 <footer class="container py-5">
     <div class="footer-div"></div>
     <div class="row">
-        <div class="col-12 col-md">
+        <!--<div class="col-12 col-md">
             <small class="d-block mb-3 text-muted">© 2017–2021</small>
         </div>
         <div class="col-6 col-md">
@@ -124,6 +115,7 @@ if (!empty($messages)) {
                 <li><a class="link-secondary" href="#">Terms</a></li>
             </ul>
         </div>
+        -->`
     </div>
 </footer>
 </body>

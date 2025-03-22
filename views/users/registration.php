@@ -1,11 +1,6 @@
 <?php $this->Title='Реєстрація'; ?>
 <?php
-$messages=\core\Messages::getMessages();
-if(!empty($messages)){
-    foreach ($messages as $mess){
-        echo $mess;
-    }
-}?>
+\core\Messages::writeMessages();?>
 <div class="content-center">
 <div class="form-register">
     <form method="post" action="">

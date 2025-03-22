@@ -43,7 +43,7 @@ class Model
     {
         Core::getInstance()->db->delete(static::$tableName,$where);
     }
-    public static function selectById($id)
+    public static function selectById($id):array|null
     {
         $res=Core::getInstance()->db->select(static::$tableName,'*',[static::$primaryKey=>$id]);
         if (is_array($res) && count($res) > 0) {
@@ -89,6 +89,18 @@ class Model
         }
         else{
             return null;
+        }
+    }
+    public function createObject($arr)
+    {
+        if ($arr !== null) {
+            foreach ($arr as $key => $value) {
+                $this->fieldsValue[$key]=$value;
+            }
+        }
+        else{
+            //зробити запис в .log
+            echo "System problem: creating object failed";
         }
     }
 }

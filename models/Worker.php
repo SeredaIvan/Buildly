@@ -7,6 +7,7 @@ use core\Model;
 /**
  * @var int $id
  * @var int $id_user
+ * @var int $id_brigade
  * @var string $categories
  * @var int $pay_per_hour
  */
@@ -14,9 +15,27 @@ class Worker extends Model
 {
     public User $user;
     public static $tableName='workers';
+    public function createObject($arr) {
+        if ($arr !== null) {
+            parent::createObject($arr);
+        } else {
+            echo "Warning: Unable to create object, data is null.";
+        }
+        $user = Worker::selectUserById($this->id_user);
+        if (!empty($user)) {
+            $this->user = $user;
+        }
+    }
+
     public static function findAllWorkers()
     {
-        $workers = self::selectAll();
+        $workersArr = self::selectAll();
+        $workers=[];
+        foreach ($workersArr as $workerCount){
+            $worker=new Worker();
+            $worker->createObject($workerCount);
+            $workers[]=$worker;
+        }
         return $workers;
     }
     public static function findAllWorkersByCondition(string $categories, int $payPerHour=0)
@@ -59,68 +78,31 @@ class Worker extends Model
         }
         var_dump($filteredWorkers);
     }
-    public static function selectByUserId(int $userId)
+    public static function selectByUserId(int $userId): ?Worker
     {
-        $workerArr= self::selectByCondition(['id_user'=>['=',$userId]])[0];
-        $worker=new Worker();
-        $worker->id=$workerArr['id'];
-        $worker->id_user=$workerArr['id_user'];
-        $worker->categories=$workerArr['categories'];
-        $worker->pay_per_hour=$workerArr['pay_per_hour'];
-        return $worker;
+        $workerArr = self::selectByCondition(['id_user' => $userId])[0] ?? null;
+
+        if (!empty($workerArr) && is_array($workerArr)) {
+            $worker = new Worker();
+            $worker->id = $workerArr['id'] ?? null;
+            $worker->id_user = $workerArr['id_user'] ?? null;
+            $worker->id_brigade = $workerArr['id_brigade'] ?? null;
+            $worker->categories = $workerArr['categories'] ?? null;
+            $worker->pay_per_hour = $workerArr['pay_per_hour'] ?? null;
+            return $worker;
+        } else {
+            return null;
+        }
+    }
+    protected static function selectUserById(int $userId):User
+    {
+        $userArr=User::selectById($userId);
+        $user=new User();
+        $user->createObject($userArr);
+        return $user;
     }
     public function getArrayCategories():array
     {
         return(explode(',',$this->categories));
     }
 }
-
-
-        /*
-        $workers = self::selectAll();
-        $mustCategories=explode(',', $categories);
-        $filteredWorkers = [];
-
-        foreach ($workers as $worker) {
-            $incrementMustArray=$mustCategories;
-            $workerCategories = explode(',', $worker['categories']);
-            $workerPayPerHour=$worker['pay_per_hour'];
-            $workerCategories = array_map('trim', $workerCategories);
-            $incrementMustArray = array_map('trim', $incrementMustArray);
-            //var_dump($incrementMustArray);
-            //var_dump($workerCategories);
-            foreach ($workerCategories as $category) {
-                echo array_search($category, $incrementMustArray);
-                if (!isset($incrementMustArray)) {
-                    if (count($incrementMustArray) === 1) {
-                        if (in_array($category, $incrementMustArray)) {
-                            $incrementMustArray = [];
-                        }
-                    } else {
-                        unset($incrementMustArray[array_search($category, $incrementMustArray)]);
-                        var_dump($incrementMustArray);
-                    }
-                }
-
-
-                /*for ($i=0;$i<count($workerCategories);$i++){
-                    for ($j=0;$j<count($incrementMustArray);$j++){
-                        if (!isset($incrementMustArray[$j])) {
-                            continue;
-                        }
-                        if (levenshtein($workerCategories[$i], $incrementMustArray[$j]) <= 2){
-                            unset($incrementMustArray[$j]);
-                            break;
-                        }
-                    }
-                }*/
-/*
-                if (count($incrementMustArray) == 0 && ($payPerHour == 0 || $workerPayPerHour == $payPerHour)) {
-                    echo "yey";
-                    $filteredWorkers[] = $worker;
-                }
-            }
-        }
-        return $filteredWorkers;
-    }
-}*/
