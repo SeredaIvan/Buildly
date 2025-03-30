@@ -59,23 +59,6 @@ class WorkerController extends Controller
             $category = $post->getOne('category');
             $city = $post->getOne('city');
 
-            /*
-            $categoryPattern = "%" . $category . "%";
-
-            $workers = Worker::selectByCondition([
-                'pay_per_hour' => ['>', $pay_per_hour_min],
-                'categories' => ['LIKE', $categoryPattern],
-            ], null, ['pay_per_hour' => ['<', $pay_per_hour_max]]);
-            
-            $sorted_workers = [];
-            foreach ($workers as $worker) {
-                $user = User::selectById($worker['id_user']);
-                if (strtolower($user['city']) === strtolower($city)) {
-                    array_push($sorted_workers, $worker);
-                }
-            }
-            ob_end_clean();
-            */
             $sortedWorkersJson = Worker::findAllWorkersByConditionJson($pay_per_hour_min, $pay_per_hour_max, $category, $city);
             header('Content-Type: application/json; charset=UTF-8');
             if ($sortedWorkersJson !== '') {

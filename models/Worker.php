@@ -108,47 +108,7 @@ class Worker extends Model
             return null;
         }
     }
-    /*
-    public static function findAllWorkersByCondition(string $categories, int $payPerHour=0)
-    {
-        $filteredWorkersId=[];
-        $filteredWorkers=[];
 
-        $allworkers=self::selectAll();
-        $mustCategories=explode(',',$categories);
-        $prepearedWorkers=[];
-        for($i=0;$i<count($allworkers);$i++){
-            $prepearedWorkers[$i]=[explode(',',$allworkers[$i]['categories']),$allworkers[$i]['pay_per_hour']];
-        }
-        foreach ($prepearedWorkers as $id=>[$workerCategory,$workerPay]){
-            if(count($mustCategories)==1){
-                echo "one thing";
-                if(in_array($mustCategories[0],$workerCategory)&&($payPerHour==0||$payPerHour===$workerPay)){
-                    $filteredWorkersId[]=$id;
-                    echo "one thing2";
-
-                }
-            }
-            else if (count($mustCategories)>1) {
-                echo "two thing";
-                $newMust=$mustCategories;//для кожного робітника онновлюємо список
-                foreach ($workerCategory as $category) {
-                    $idArr=array_search($category,$newMust);
-                    echo $idArr;
-                    if(isset($idArr)) {
-                        unset($newMust[$idArr]);
-                    }
-                }
-                if(count($newMust)==0&&$payPerHour==$workerPay){
-                    $filteredWorkersId[]=$id;
-                }
-            }
-        }
-        foreach ($filteredWorkersId as $id){
-            $filteredWorkers=$allworkers[$id];
-        }
-        var_dump($filteredWorkers);
-    }*/
     public static function selectByUserId(int $userId): ?Worker
     {
         $workerArr = self::selectByCondition(['id_user' => $userId])[0] ?? null;
