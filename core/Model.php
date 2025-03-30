@@ -10,6 +10,8 @@ class Model
     protected static $primaryKey='id';
     public static $tableName;
 
+    protected $ignoreJson;
+
     public function __construct()
     {
         $this->fieldsValue=[];
@@ -102,5 +104,15 @@ class Model
             //зробити запис в .log
             echo "System problem: creating object failed";
         }
+    }
+    public function toJson()
+    {
+        $arr=[];
+        foreach ($this->fieldsValue as $key => $value){
+            if(!in_array($key, $this->ignoreJson) ) {
+                $arr[$key] = $value;
+            }
+        }
+        return json_encode($arr);
     }
 }

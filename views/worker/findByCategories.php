@@ -1,7 +1,3 @@
-<?php
-$workers = $workers ?? [];
-$Title = 'Find By Categories ';
-?>
 <style>
     #city-list {
         border: 1px solid #ddd;
@@ -10,7 +6,7 @@ $Title = 'Find By Categories ';
         position: absolute;
         z-index: 100;
         background-color: white;
-        width: 200px;
+        width: 100%;
     }
     .city-item {
         padding: 8px;
@@ -20,88 +16,52 @@ $Title = 'Find By Categories ';
         background-color: #f1f1f1;
     }
 </style>
+
 <div class="row mb-3">
-    <form action="/worker/findByCategories" method="post">
+    <form id="filter-form">
         <div class="row mb-3 p-4">
             <div class="col-md-2">
-                <input type="number" id="pay_per_hour_min" class="form-control"  placeholder="Введіть мінімальну оплату за год" >
+                <input type="number" name="pay_per_hour_min" class="form-control" placeholder="Мінімальна оплата" required>
             </div>
             <div class="col-md-2">
-                <input type="number" id="pay_per_hour_max" class="form-control" placeholder="Введіть максимальну оплату за год"  >
+                <input type="number" name="pay_per_hour_max" class="form-control" placeholder="Максимальна оплата" required>
             </div>
             <div class="col-md-4">
-            <?php $categories=\core\Config::getInstance()->paramsCategories[0]; ?>
-                <select class="form-select" aria-label="Default select example" >
+                <?php
+                $categories = \core\Config::getInstance()->paramsCategories[0];
+                ?>
+                <select name="category" class="form-select" required>
                     <option selected>Виберіть категорію</option>
-                    <?php foreach ($categories as $category=>$countRadio):?>
-                        <?php  foreach ($countRadio as $key=>$value) :?>
-                            <option value="<?=$value?>"><?=$value?></option>
-                        <?php endforeach?>
-                    <?php endforeach;?>
+                    <?php foreach ($categories as $categoryGroup): ?>
+                        <?php foreach ($categoryGroup as $key => $value): ?>
+                            <option value="<?= $value ?>"><?= $value ?></option>
+                        <?php endforeach; ?>
+                    <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-4">
-                <input class="form-control"  type="text" id="city-input" placeholder="Введіть місто..." autocomplete="off">
+            <div class="col-md-3 position-relative">
+                <input class="form-control" name="city" type="text" id="city-input" placeholder="Введіть місто..." autocomplete="off" required>
                 <div id="city-list"></div>
+            </div>
+            <div class="col-md-1">
+                <button type="submit" class="btn btn-warning w-100">Знайти</button>
             </div>
         </div>
     </form>
 </div>
-<div class="row m-3">
-    <?php foreach ($workers as $worker):?>
 
-        <div class="col-md-3 " >
-            <div class="card border rounded-3 mb-2" style="height: 500px">
-                <div class="row p-4">
+<div class="row m-3" id="workers-container"></div>
 
-                    <div class="col-md-12 pb-4"><span><?=$worker->user->name?> <?=$worker->user->surname?></span></div>
-                    <div class="p-2">
-                        <div class="content-center col-md-12 p-1 border rounded-3  hover-shadow mb-3">
-                            <span class="text-muted mb-0 " style="font-size: 12px"><?=$worker->user->city?></span>
-                        </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="row " style="height: 200px">
-                            <div class="col-md-12 content-center mb-4">Категорії користувача</div>
-                            <?php
-                            $categories = $worker->getArrayCategories();
-                            $i=0;
-                            foreach ($categories as $category):
-                                $ucCategory = mb_strtoupper(mb_substr($category, 0, 1, "UTF-8"), "UTF-8") . mb_substr($category, 1, null, "UTF-8");
-                                $i++;
-                                if ($i==5){
-                                    break;
-                                }
-                                ?>
-                                <div class="content-center p-1 border col-md-3 rounded-3 mb-4 hover-shadow" style="margin-right: 3px">
-                                    <span class="text-muted mb-0 " style="font-size: 12px"><?=$ucCategory?></span>
-                                </div>
-                            <?php endforeach;?>
-                        </div>
-                    </div>
-                    <div class="col-md-12 content-center">
-                        <p class="p-3 mb-0"><?=$worker->pay_per_hour?> грн в год.</p>
-                    </div>
-                    <div class="col-md-12 content-center">
-                        <button class="btn btn-warning">Замовити роботу</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    <?php endforeach;?>
-</div>
-<script >
-    const cities = [
-        "Київ", "Львів", "Одеса", "Харків", "Дніпро", "Запоріжжя", "Миколаїв", "Чернівці", "Полтава",
+<script>
+    const cities = ["Київ", "Львів", "Одеса", "Харків", "Дніпро", "Запоріжжя", "Миколаїв", "Чернівці", "Полтава",
         "Суми", "Івано-Франківськ", "Вінниця", "Черкаси", "Житомир", "Хмельницький", "Рівне", "Тернопіль",
-        "Луцьк", "Кропивницький", "Ужгород", "Миколаїв", "Донецьк", "Луганськ", "Миколаїв", "Севастополь"
-    ];
+        "Луцьк", "Кропивницький", "Ужгород", "Донецьк", "Луганськ", "Севастополь"];
+
     const input = document.getElementById("city-input");
     const cityList = document.getElementById("city-list");
 
     input.addEventListener("input", function() {
-        const query = input.value.toLowerCase();
+        const query = input.value.trim().toLowerCase();
         cityList.innerHTML = "";
 
         if (query) {
@@ -111,7 +71,7 @@ $Title = 'Find By Categories ';
                 const div = document.createElement("div");
                 div.classList.add("city-item");
                 div.textContent = city;
-                div.addEventListener("click", function() {
+                div.addEventListener("click", () => {
                     input.value = city;
                     cityList.innerHTML = "";
                 });
@@ -120,9 +80,69 @@ $Title = 'Find By Categories ';
         }
     });
 
-    document.addEventListener("click", function(event) {
+    document.addEventListener("click", (event) => {
         if (!cityList.contains(event.target) && event.target !== input) {
             cityList.innerHTML = "";
         }
     });
+
+    document.getElementById("filter-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const formData = new URLSearchParams(new FormData(this)).toString();
+        document.getElementById("workers-container").innerHTML = "";
+
+        fetch("/worker/findByCategories", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                if (!Array.isArray(data)) {
+                    alert("Жодного результату не знайдено.");
+                    return;
+                }
+
+                const container = document.getElementById("workers-container");
+
+                data.forEach(worker => {
+                    const card = document.createElement("div");
+                    card.classList.add("col-md-3");
+
+                    const categories = worker.categories.split(",").map(category =>
+                        `<span class="badge bg-secondary m-1">${category.trim()}</span>`
+                    ).join('');
+
+                    card.innerHTML = `
+            <div class="card border rounded-3 mb-2" style="height: 500px">
+                <div class="p-4">
+                    <h5>${worker.user.name} ${worker.user.surname}</h5>
+                    <p class="text-muted">${worker.user.city}</p>
+                    <div class="mb-3">
+                        <strong>Категорії:</strong>
+                        <div class="d-flex flex-wrap">
+                            ${categories}
+                        </div>
+                    </div>
+                    <p><strong>${worker.pay_per_hour} грн/год</strong></p>
+                    <button class="btn btn-warning w-100">Замовити</button>
+                </div>
+            </div>`;
+
+                    container.appendChild(card);
+                });
+            })
+            .catch(error => {
+                console.error("Помилка отримання даних:", error);
+                alert("Сталася помилка при отриманні даних.");
+            });
+    });
+
 </script>

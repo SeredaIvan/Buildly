@@ -144,6 +144,8 @@ class DB
         if (!empty($or)) {
             $query = $this->orTrue($query, $or, $params);
         }
+        //echo $query;
+        //die();
         $stmt = $this->pdo->prepare($query);
 
         foreach ($params as $key => &$value) {

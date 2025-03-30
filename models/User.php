@@ -65,5 +65,9 @@ class User extends Model
         if ($this->role==='costumer')return true;
         else return false;
     }
-
+    public function toJson()
+    {
+        $this->ignoreJson=['password'];
+        return parent::toJson();
+    }
 }

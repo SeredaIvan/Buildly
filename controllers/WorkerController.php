@@ -47,15 +47,44 @@ class WorkerController extends Controller
     }
     public function actionFindByCategories()
     {
-        if($this->isGet){
-            $workers=Worker::findAllWorkers();
-            return $this->render(['workers'=>$workers]);
+        if ($this->isGet) {
+            $workers = Worker::findAllWorkers();
+            return $this->render(['workers' => $workers]);
         }
-        if($this->isPost){
+
+        if ($this->isPost) {
             $post = new Post();
+            $pay_per_hour_min = $post->getOne('pay_per_hour_min');
+            $pay_per_hour_max = $post->getOne('pay_per_hour_max');
+            $category = $post->getOne('category');
+            $city = $post->getOne('city');
 
+            /*
+            $categoryPattern = "%" . $category . "%";
+
+            $workers = Worker::selectByCondition([
+                'pay_per_hour' => ['>', $pay_per_hour_min],
+                'categories' => ['LIKE', $categoryPattern],
+            ], null, ['pay_per_hour' => ['<', $pay_per_hour_max]]);
+            
+            $sorted_workers = [];
+            foreach ($workers as $worker) {
+                $user = User::selectById($worker['id_user']);
+                if (strtolower($user['city']) === strtolower($city)) {
+                    array_push($sorted_workers, $worker);
+                }
+            }
+            ob_end_clean();
+            */
+            $sortedWorkersJson = Worker::findAllWorkersByConditionJson($pay_per_hour_min, $pay_per_hour_max, $category, $city);
+            header('Content-Type: application/json; charset=UTF-8');
+            if ($sortedWorkersJson !== '') {
+                echo $sortedWorkersJson;
+            } else {
+                echo json_encode(['error' => 'Не знайдено робітників за заданими критеріями.']);
+            }
+            exit;
         }
-
     }
     public static function findUserWorker():Worker|null
     {
