@@ -49,13 +49,17 @@ use core\Config;
             <div class="col-md-2 text-end ms-auto">
                 <div class="flex-shrink-0 dropdown">
                     <a href="/users/view" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" class="rounded-circle">
+                        <?php if ($user->IsWorker()): ?>
+                        <img src="/media/worker.svg" alt="mdo" width="32" height="32" class="rounded-circle">
+                        <?php elseif ($user->IsCostumer()): ?>
+                            <img src="/media/consumer.svg" alt="mdo" width="32" height="32" class="rounded-circle">
+                        <?php endif; ?>
                     </a>
                     <ul class="dropdown-menu text-small shadow" aria-labelledby="dropdownUser2">
                         <li><a class="dropdown-item" href="/users/view">Переглянути акаунт</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <!--<li><a class="dropdown-item" href="#">Settings</a></li>
                         <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><hr class="dropdown-divider"></li>-->
                         <li><a class="dropdown-item" href="/users/signOut">Sign out</a></li>
                     </ul>
                 </div>
@@ -74,7 +78,7 @@ use core\Config;
 <footer class="container py-5">
     <div class="footer-div"></div>
     <div class="row">
-        <!--<div class="col-12 col-md">
+        <div class="col-12 col-md">
             <small class="d-block mb-3 text-muted">© 2017–2021</small>
         </div>
         <div class="col-6 col-md">
@@ -115,7 +119,6 @@ use core\Config;
                 <li><a class="link-secondary" href="#">Terms</a></li>
             </ul>
         </div>
-        -->`
     </div>
 </footer>
 </body>
