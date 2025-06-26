@@ -14,6 +14,10 @@ use MongoDB\Driver\Server;
 
 class WorkerController extends Controller
 {
+    public function actionOfferWork()
+    {
+
+    }
     public function actionWorkerRegisterInfo()
     {
         if($this->isPost) {

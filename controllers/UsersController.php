@@ -8,6 +8,7 @@ use core\Core;
 use core\Get;
 use core\Messages;
 use core\Post;
+use models\Tasks;
 use models\User;
 
 class UsersController extends Controller
@@ -120,11 +121,14 @@ class UsersController extends Controller
             $userObj->createObject($user);
             if (!empty($userObj) && $userObj->IsWorker()) {
                 $worker = \models\Worker::selectByUserId($userObj->id);
+                /*$currentUser=User::GetUser();
+                if($currentUser->IsCostumer()) {
+                    $tasks = Tasks::selectByCondition(['id_costumer' => ['=',$currentUser->id]]);
+                    return $this->render(['user'=>$userObj, 'worker'=>$worker,'tasks'=>$tasks], 'views/users/view.php');
+                }*/
                 return $this->render(['user'=>$userObj, 'worker'=>$worker], 'views/users/view.php');
             }
             return $this->render(['user'=>$userObj], 'views/users/view.php');
-
-
         }
         else{
             Messages::addMessage('Немає Id');

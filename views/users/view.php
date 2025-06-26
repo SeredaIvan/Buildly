@@ -25,7 +25,6 @@
                                      class="rounded-circle img-fluid" style="width: 150px;" id="avatarImg">
                                 <div id="divImg" class="hover-shadow-lg rounded-circle content-center" style="height: 60px;width: 60px ; background-color: white ;position: absolute; bottom: 5px; right: 5px;">
                                     <img class=" " id="pencilImg" src="/media/pencil.svg" width="40" height="40" style=" background-color: white; display: none;">
-                                    <!--Інтегруй сюди форму для завантаження фото щоб вона з'являлась на onclick divImg та на PencilImg-->
                                     <form id="uploadForm" style="display: none;" enctype="multipart/form-data">
                                         <input type="file" id="fileInput" name="file" accept="image/*">
                                         <button type="submit" class="btn btn-warning">Завантажити</button>
@@ -36,9 +35,15 @@
                         <h5 class="my-3"><?=$user->name;?> <?=$user->surname?></h5>
                         <p class="text-muted mb-1"><?=$user->about?></p>
                         <p class="text-muted mb-4">____</p>
-                        <?php if ($user->IsWorker()): ?>
+                        <?php if (!empty($tasks)&&$user->IsWorker()&&\models\User::GetUser()->IsCostumer()): ?>
                             <div class="d-flex justify-content-center mb-2">
-                                <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-warning">Замовити роботу</button>
+
+                                    <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-warning">Замовити роботу</button>
+
+                                <form action="/workers/offerWork">
+                                    <select></select>
+                                    <input type="hidden">
+                                </form>
                             </div>
                         <?php endif; ?>
                     </div>
