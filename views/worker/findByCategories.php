@@ -55,8 +55,10 @@
         </div>
     </form>
 </div>
-<?php if (!empty($workers)): ?>
+<?php if (!empty($category)): ?>
     <h4 class="px-4 text-muted">Результати по категорії: <?= htmlspecialchars($category) ?></h4>
+<?php endif;?>
+<?php if (!empty($workers)): ?>
     <div class="row m-3" id="workers-container">
         <?php foreach ($workers as $worker): ?>
             <div class="col-md-3">
@@ -79,6 +81,10 @@
             </div>
         <?php endforeach; ?>
     </div>
+<?php else:?>
+<div class="row m-3" id="workers-container">
+    <p>Не знайдено нікого</p>
+</div>
 <?php endif; ?>
 
 

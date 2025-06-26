@@ -57,16 +57,17 @@ class WorkerController extends Controller
                 $workersObj=[];
                 $category = urldecode($parts[2]);
                 $workers = Worker::findAllWorkersByConditionObj(0, 999999, $category, '*');
-                foreach ($workers as $worker){
-                    $workerObj = new Worker();
-                    $workerObj->createObject($worker);
+                if ($workers!=null) {
+                    foreach ($workers as $worker) {
+                        $workerObj = new Worker();
+                        $workerObj->createObject($worker);
 
-                    if (isset($workerObj->user) && $workerObj->user->id !== null) {
-                        $workersObj[] = $workerObj;
+                        if (isset($workerObj->user) && $workerObj->user->id !== null) {
+                            $workersObj[] = $workerObj;
+                        }
                     }
+                    return $this->render(['workers' => $workersObj, 'category' => $category]);
                 }
-
-                return $this->render(['workers' => $workersObj, 'category' => $category]);
             }
 
             return $this->render();
