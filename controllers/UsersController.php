@@ -109,6 +109,26 @@ class UsersController extends Controller
     }
     public function actionSee()
     {
+        $get = new Get();
+        $route = $get->arr['route'] ?? '';
+        $parts = explode('/', $route);
+        if(array_key_exists(2,$parts)){
+            $id=$parts[2];
+            $user = \models\User::selectById($id);
+
+            $userObj= new User();
+            $userObj->createObject($user);
+            if (!empty($userObj) && $userObj->IsWorker()) {
+                $worker = \models\Worker::selectByUserId($userObj->id);
+                return $this->render(['user'=>$userObj, 'worker'=>$worker], 'views/users/view.php');
+            }
+            return $this->render(['user'=>$userObj], 'views/users/view.php');
+
+
+        }
+        else{
+            Messages::addMessage('Немає Id');
+        }
 
     }
     public function actionGfgf()

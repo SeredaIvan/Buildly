@@ -7,11 +7,12 @@
 <section style="background-color: #eee;">
     <div class="container py-5">
         <!--зробити перевірку на те що воркер дозареєструвався  session('is_register_worker')-->
-    <?php
-    $user = \models\User::GetUser();
-    //$is_register_worker=\core\Core::getInstance()->session->get('is_register_worker');
-    if(!empty($user)&&$user->IsWorker()) {
-        $worker = \models\Worker::selectByUserId($user->id);
+    <?php if(empty($user) ) {
+        $user = \models\User::GetUser();
+        //$is_register_worker=\core\Core::getInstance()->session->get('is_register_worker');
+        if (!empty($user) && $user->IsWorker()) {
+            $worker = \models\Worker::selectByUserId($user->id);
+        }
     }
     ?>
         <div class="row">
