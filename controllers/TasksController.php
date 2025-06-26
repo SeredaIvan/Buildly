@@ -3,6 +3,7 @@
 namespace controllers;
 
 use core\Controller;
+use core\Get;
 use core\Messages;
 use core\Post;
 use models\Tasks;
@@ -75,5 +76,28 @@ class TasksController extends Controller
 
         return $this->render(['user' => $user]);
     }
+    public function actionAll()
+    {
+        $user = \models\User::GetUser();
+        $get = new \core\Get();
+
+        $filters = [
+            'cost_min' => $get->arr['cost_min'] ?? null,
+            'cost_max' => $get->arr['cost_max'] ?? null,
+            'date'     => $get->arr['date'] ?? null,
+        ];
+
+        $taskModel = new \models\Tasks();
+        $tasks = $taskModel->findAllWithFilters($filters);
+
+        return $this->render([
+            'user' => $user,
+            'filters' => $filters,
+            'tasks' => $tasks,
+        ]);
+    }
+
+
+
 
 }

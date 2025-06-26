@@ -56,4 +56,29 @@ class Tasks extends Model
         else if(!empty($id))
             self::selectByCondition(['id'=>['=',$id]]);
     }
+    public function findAllWithFilters(array $filters = []): array
+    {
+        $conditions = [];
+
+        if (!empty($filters['cost_min']) && is_numeric($filters['cost_min'])) {
+            $conditions[] = ['cost', '>=', (float)$filters['cost_min']];
+        }
+
+        if (!empty($filters['cost_max']) && is_numeric($filters['cost_max'])) {
+            $conditions[] = ['cost', '<=', (float)$filters['cost_max']];
+        }
+
+        if (!empty($filters['date']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $filters['date'])) {
+            $conditions[] = ['date', '=', $filters['date']];
+        }
+
+        $where = [];
+        foreach ($conditions as $condition) {
+            [$field, $operator, $value] = $condition;
+            $where[$field] = [$operator, $value];
+        }
+
+        return self::selectByCondition($where) ?? [];
+    }
+
 }

@@ -11,8 +11,9 @@ class RequestMethod
     }
     public function getOne($name)
     {
-        return $this->arr[$name];
+        return $this->arr[$name] ?? null;
     }
+
     public function getAll()
     {
         return $this->arr;
