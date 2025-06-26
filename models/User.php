@@ -47,8 +47,7 @@ class User extends Model
     public static function GetUser(): ?self
     {
         if (self::IsLogged()) {
-            $userData = Core::getInstance()->session->get('user')[0];
-
+            $userData = Core::getInstance()->session->get('user');
             $user =new User();
             $user->createObject($userData);
             return $user;

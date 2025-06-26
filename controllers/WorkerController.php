@@ -7,6 +7,7 @@ use core\Core;
 use core\Get;
 use core\Messages;
 use core\Post;
+use core\QueryParser;
 use models\User;
 use models\Worker;
 use MongoDB\Driver\Server;
@@ -48,8 +49,27 @@ class WorkerController extends Controller
     public function actionFindByCategories()
     {
         if ($this->isGet) {
-            $workers = Worker::findAllWorkers();
-            return $this->render(['workers' => $workers]);
+            $get = new Get();
+            $route = $get->arr['route'] ?? '';
+            $parts = explode('/', $route);
+
+            if (count($parts) >= 3) {
+                $workersObj=[];
+                $category = urldecode($parts[2]);
+                $workers = Worker::findAllWorkersByConditionObj(0, 999999, $category, '*');
+                foreach ($workers as $worker){
+                    $workerObj = new Worker();
+                    $workerObj->createObject($worker);
+
+                    if (isset($workerObj->user) && $workerObj->user->id !== null) {
+                        $workersObj[] = $workerObj;
+                    }
+                }
+
+                return $this->render(['workers' => $workersObj, 'category' => $category]);
+            }
+
+            return $this->render();
         }
 
         if ($this->isPost) {
@@ -61,14 +81,13 @@ class WorkerController extends Controller
 
             $sortedWorkersJson = Worker::findAllWorkersByConditionJson($pay_per_hour_min, $pay_per_hour_max, $category, $city);
             header('Content-Type: application/json; charset=UTF-8');
-            if ($sortedWorkersJson !== '') {
-                echo $sortedWorkersJson;
-            } else {
-                echo json_encode(['error' => 'Не знайдено робітників за заданими критеріями.']);
-            }
+            echo $sortedWorkersJson ?: json_encode(['error' => 'Не знайдено робітників за заданими критеріями.']);
             exit;
         }
+
+        return $this->render();
     }
+
     public static function findUserWorker():Worker|null
     {
         if(User::IsLogged()){
@@ -84,4 +103,5 @@ class WorkerController extends Controller
         }
         return null;
     }
+
 }

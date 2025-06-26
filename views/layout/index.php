@@ -35,7 +35,7 @@ use core\Config;
 
             <?php elseif ($user->IsCostumer()): ?>
                 <li><a href="/worker/findAll" class="nav-link px-2 link-dark">Знайти спеціаліста</a></li>
-                <li><a href="/categories" class="nav-link px-2 link-dark">Категорії</a></li>
+                <li><a href="/categories/viewAll" class="nav-link px-2 link-dark">Категорії</a></li>
             <?php endif; ?>
             <li><a href="/about" class="nav-link px-2 link-dark">Про нас</a></li>
         </ul>

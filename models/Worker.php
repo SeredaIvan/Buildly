@@ -46,7 +46,7 @@ class Worker extends Model
      * @param $city
      * @return string clear Json for Workers with Users
      */
-    public static function findAllWorkersByConditionJson($pay_per_hour_min, $pay_per_hour_max, $category, $city):string
+    public static function findAllWorkersByConditionJson($pay_per_hour_min, $pay_per_hour_max, $category, $city='*'):string
     {
         $categoryPattern = "%" . $category . "%";
 
@@ -56,6 +56,13 @@ class Worker extends Model
         ], null, ['pay_per_hour' => ['<', $pay_per_hour_max]]);//повертає масив значень [['id': 1 ...], ['id':2...],]
         if(!empty($freeWorkers)) {
             $json="[";
+            if($city==="*"){
+                foreach ($freeWorkers as $worker) {
+                    $tmpWorker = Worker::selectByUserId($worker['id_user']);
+                    $json.=$tmpWorker->toJson()." , ";
+                }
+            }
+            else{
             foreach ($freeWorkers as $worker) {
                 $tmpWorker = Worker::selectByUserId($worker['id_user']);//перетворення на об'єкт
                 if(strtolower($tmpWorker->user->city) === strtolower($city))
@@ -63,6 +70,7 @@ class Worker extends Model
                 else {
                     $json=substr($json, 0, -3);
                 }
+            }
             }
 
             if($json!=='') {
@@ -83,21 +91,26 @@ class Worker extends Model
      * @param $city
      * @return array | null assoc arr for Workers with User
      */
-    public static function findAllWorkersByConditionObj($pay_per_hour_min, $pay_per_hour_max, $category, $city):array|null
+    public static function findAllWorkersByConditionObj($pay_per_hour_min, $pay_per_hour_max, $category, $city='*'):array|null
     {
         $categoryPattern = "%" . $category . "%";
 
         $freeWorkers = Worker::selectByCondition([
             'pay_per_hour' => ['>', $pay_per_hour_min],
             'categories' => ['LIKE', $categoryPattern],
-        ], null, ['pay_per_hour' => ['<', $pay_per_hour_max]]);//повертає масив значень [['id': 1 ...], ['id':2...],]
+        ], null, ['pay_per_hour' => ['<', $pay_per_hour_max]]);
         if(!empty($freeWorkers)) {
             $workers= [];
-            foreach ($freeWorkers as $worker) {
-                $tmpWorker = Worker::selectByUserId($worker['id_user']);//перетворення на об'єкт
-                if(strtolower($tmpWorker->user->city) === strtolower($city))
-                    $workers[]=$worker;
-                else continue;
+            if($city!='*') {
+                foreach ($freeWorkers as $worker) {
+                    $tmpWorker = Worker::selectByUserId($worker['id_user']);
+                    if (strtolower($tmpWorker->user->city) === strtolower($city))
+                        $workers[] = $worker;
+                    else continue;
+                }
+            }
+            else{
+                $workers=$freeWorkers;
             }
             if(!empty($workers))
                 return $workers;
@@ -128,6 +141,7 @@ class Worker extends Model
         $user->createObject($userArr);
         return $user;
     }
+
     public function getArrayCategories():array
     {
         return(explode(',',$this->categories));

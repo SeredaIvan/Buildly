@@ -24,7 +24,6 @@ class UsersController extends Controller
 
                 if (empty($userExists)) {
                     $user = new User();
-                    //подивитись чи можна зробити через CreateObject
                     $user->name = $post->getOne('name');
                     $user->surname = $post->getOne('surname');
                     $user->email = $email;
@@ -97,33 +96,6 @@ class UsersController extends Controller
         return $this->render();
     }
 
-    public function actionTestEmail()
-    {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: POST, GET');
-        header('Access-Control-Allow-Headers: Content-Type');
-        header('Content-Type: application/json');
-
-        if($this->isGet){
-            if (isset($_GET['email'])) {
-                $email = $_GET['email'];
-                $res = Core::getInstance()->db->select('users','*',['email'=>['=',$email]]);
-
-                if (!empty($res)){
-                    $data['data'] = $res;
-                } else {
-                    $data['data'] = 'err';
-                }
-            } else {
-                $data['data'] = 'email not provided';
-            }
-
-            echo json_encode($data);
-        } else {
-            http_response_code(405);
-            echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
-        }
-    }
 
     public function actionSignOut()
     {
@@ -135,7 +107,10 @@ class UsersController extends Controller
     {
         return $this->render();
     }
+    public function actionSee()
+    {
 
+    }
     public function actionGfgf()
     {
         return $this->render();

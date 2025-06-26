@@ -1,4 +1,10 @@
+<?php
+/** @var array $workers */
+/** @var string|null $category */
+?>
+
 <style>
+
     #city-list {
         border: 1px solid #ddd;
         max-height: 200px;
@@ -49,6 +55,32 @@
         </div>
     </form>
 </div>
+<?php if (!empty($workers)): ?>
+    <h4 class="px-4 text-muted">Результати по категорії: <?= htmlspecialchars($category) ?></h4>
+    <div class="row m-3" id="workers-container">
+        <?php foreach ($workers as $worker): ?>
+            <div class="col-md-3">
+                <div class="card border rounded-3 mb-2" style="height: 500px">
+                    <div class="p-4">
+                        <h5><?= $worker->user->name ?> <?= $worker->user->surname ?></h5>
+                        <p class="text-muted"><?= $worker->user->city ?></p>
+                        <div class="mb-3">
+                            <strong>Категорії:</strong>
+                            <div class="d-flex flex-wrap">
+                                <?php foreach (explode(',', $worker->categories) as $cat): ?>
+                                    <span class="badge bg-secondary m-1"><?= trim($cat) ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <p><strong><?= $worker->pay_per_hour ?> грн/год</strong></p>
+                        <button class="btn btn-warning w-100">Замовити</button>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+
 
 <div class="row m-3" id="workers-container"></div>
 
