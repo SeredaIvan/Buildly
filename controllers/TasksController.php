@@ -108,5 +108,23 @@ class TasksController extends Controller
             'tasks'   => $tasks,
         ]);
     }
+    public function actionView($params)
+    {
+        if (!empty($params[0])) {
+            $id = (int)$params[0];
+            $taskArray = \models\Tasks::selectById($id);
+            if (!empty($taskArray)) {
+                $task = new \models\Tasks();
+                $task->createObject($taskArray);
+                return $this->render(['task' => $task], 'views/tasks/view.php');
+            } else {
+                \core\Messages::addMessage('Завдання не знайдене', 'alert-danger');
+                return $this->redirect('/tasks');
+            }
+        } else {
+            \core\Messages::addMessage('Невірний ID завдання', 'alert-danger');
+            return $this->redirect('/tasks');
+        }
+    }
 
 }

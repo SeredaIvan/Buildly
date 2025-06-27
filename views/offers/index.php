@@ -12,7 +12,7 @@ Messages::writeMessages();
     <h2>Перегляд пропозицій</h2>
 
     <?php if (!empty($offersForCostumer)): ?>
-        <h4 class="mt-4">Ваші пропозиції (для замовника)</h4>
+        <h4 class="mt-4">Ваші пропозиції</h4>
         <div class="list-group mb-5">
             <?php foreach ($offersForCostumer as $offer): ?>
                 <?php $workerUser = $offer['workerUser'] ?? null; ?>
@@ -56,7 +56,7 @@ Messages::writeMessages();
     <?php endif; ?>
 
     <?php if (!empty($offersForWorker)): ?>
-        <h4 class="mt-4">Ваші пропозиції (для виконавця)</h4>
+        <h4 class="mt-4">Ваші пропозиції </h4>
         <div class="list-group">
             <?php foreach ($offersForWorker as $offer): ?>
                 <?php $costumerUser = $offer['costumerUser'] ?? null; ?>
