@@ -6,6 +6,7 @@
 </style>
 <section style="background-color: #eee;">
     <div class="container py-5">
+        <?php ?>
         <!--зробити перевірку на те що воркер дозареєструвався  session('is_register_worker')-->
     <?php if(empty($user) ) {
         $user = \models\User::GetUser();
@@ -23,49 +24,45 @@
                             <div id="avatar" class="position-relative">
                                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
                                      class="rounded-circle img-fluid" style="width: 150px;" id="avatarImg">
-                                <div id="divImg" class="hover-shadow-lg rounded-circle content-center" style="height: 60px;width: 60px ; background-color: white ;position: absolute; bottom: 5px; right: 5px;">
-                                    <img class=" " id="pencilImg" src="/media/pencil.svg" width="40" height="40" style=" background-color: white; display: none;">
-                                    <form id="uploadForm" style="display: none;" enctype="multipart/form-data">
-                                        <input type="file" id="fileInput" name="file" accept="image/*">
-                                        <button type="submit" class="btn btn-warning">Завантажити</button>
-                                    </form>
-                                </div>
+
                             </div>
                         </div>
                         <h5 class="my-3"><?=$user->name;?> <?=$user->surname?></h5>
                         <p class="text-muted mb-1"><?=$user->about?></p>
                         <p class="text-muted mb-4">____</p>
-                        <?php if (!empty($tasks)&&$user->IsWorker()&&\models\User::GetUser()->IsCostumer()): ?>
-                            <div class="d-flex justify-content-center mb-2">
+                        <?php if ($current = \models\User::GetUser()): ?>
+                            <?php if ($current->IsCostumer() && $worker): ?>
+                                <?php if (!empty($tasksForDropdown)): ?>
+                                    <form action="/offers/offerjob" method="post" class="row g-2 justify-content-center align-items-end">
+                                        <div class="col-md-6">
+                                            <label for="task_id" class="form-label text-center w-100">Ваші завдання</label>
+                                            <select name="task_id" id="task_id" class="form-select" required>
+                                                <option value="" disabled selected>Оберіть завдання…</option>
+                                                <?php foreach ($tasksForDropdown as $task): ?>
+                                                    <option value="<?= htmlspecialchars($task['id']) ?>">
+                                                        <?= htmlspecialchars($task['short_text']) ?>
+                                                        (<?= htmlspecialchars($task['date']) ?>, <?= htmlspecialchars($task['cost']) ?>₴)
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 d-flex justify-content-center mt-2">
+                                            <input type="hidden" name="costumer_id" value="<?= htmlspecialchars($current->id) ?>">
+                                            <input type="hidden" name="worker_id" value="<?= htmlspecialchars($worker->id) ?>">
+                                            <button type="submit" class="btn btn-warning px-4">Запропонувати роботу</button>
+                                        </div>
+                                    </form>
 
-                                    <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-warning">Замовити роботу</button>
-
-                                <!--<form action="/offers/offerjob" method="post">
-                                    <input type="hidden" name="task_id" value="<?php echo $task['id']?>">
-                                    <input type="hidden" name="costumer_id" value="<?php $user->id ?? ''?>">
-                                    <input type="hidden" name="worker_id" value="<?php $worker->id ?? ''?>">
-                                    <button type="submit" class="btn btn-warning">Запропонувати кандидатуру</button>
-                                </form>-->
-                            </div>
+                                <?php else: ?>
+                                    <div class="alert alert-info">
+                                        У вас ще немає створених завдань.&nbsp;
+                                        <a href="/tasks/add">Додати нове завдання</a>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
                         <?php endif; ?>
                     </div>
                 </div>
-                <!--
-                <div class="card mb-4 mb-lg-0">
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush rounded-3">
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fas fa-globe fa-lg text-body">Додати кількість виконаних робіт для воркера і кількість замовлень для клієнта</i>
-                                <p class="mb-0" style="color: red">!!!!!!!!</p>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                                <i class="fab fa-github fa-lg text-body">Додати відгуки для воркера</i>
-                                <p class="mb-0"  style="color: red">!!!!!!!!</p>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                -->
             </div>
             <div class="col-lg-8">
                 <div class="card mb-4">
@@ -148,77 +145,7 @@
                     <hr>
                 </div>
                 <?php endif;?>
-                <?php if (!empty($worker)):?>
-                <!--
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card mb-4 mb-md-0">
-                            <div class="card-body">
-                                <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
-                                </p>
-                                <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                                <div class="progress rounded mb-2" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card mb-4 mb-md-0">
-                            <div class="card-body">
-                                <p class="mb-4"><span class="text-primary font-italic me-1">assigment</span> Project Status
-                                </p>
-                                <p class="mb-1" style="font-size: .77rem;">Web Design</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Website Markup</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">One Page</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 89%" aria-valuenow="89"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Mobile Template</p>
-                                <div class="progress rounded" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 55%" aria-valuenow="55"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <p class="mt-4 mb-1" style="font-size: .77rem;">Backend API</p>
-                                <div class="progress rounded mb-2" style="height: 5px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66"
-                                         aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>-->
-                <?php endif;?>
+
             </div>
         </div>
     </div>

@@ -27,6 +27,7 @@ class DB
             $smt->execute();
             return $this->pdo->lastInsertId();
         } catch (\PDOException $e) {
+
             return false;
         }
     }

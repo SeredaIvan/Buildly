@@ -33,6 +33,7 @@ class Model
         }
         else{
             $res = Core::getInstance()->db->update(static::$tableName,[static::$primaryKey =>['=', $id]],$this->fieldsValue);
+
         }
 
         return $res;

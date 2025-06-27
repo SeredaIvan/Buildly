@@ -108,35 +108,45 @@ class UsersController extends Controller
     {
         return $this->render();
     }
-    public function actionSee()
+    public function actionSee($id)
     {
-        $get = new Get();
-        $route = $get->arr['route'] ?? '';
-        $parts = explode('/', $route);
-        if(array_key_exists(2,$parts)){
-            $id=$parts[2];
-            $user = \models\User::selectById($id);
 
-            $userObj= new User();
-            $userObj->createObject($user);
-            if (!empty($userObj) && $userObj->IsWorker()) {
-                $worker = \models\Worker::selectByUserId($userObj->id);
-                /*$currentUser=User::GetUser();
-                if($currentUser->IsCostumer()) {
-                    $tasks = Tasks::selectByCondition(['id_costumer' => ['=',$currentUser->id]]);
-                    return $this->render(['user'=>$userObj, 'worker'=>$worker,'tasks'=>$tasks], 'views/users/view.php');
-                }*/
-                return $this->render(['user'=>$userObj, 'worker'=>$worker], 'views/users/view.php');
+        $userData = !empty($id[0]) ? (int)$id[0] : null;
+        //var_dump($userData);
+        //die();
+        $viewed = User::selectById($userData);
+        if (!$viewed) {
+            Messages::addMessage('Користувача не знайдено', 'alert-danger');
+            return $this->redirect('/');
+        }
+
+
+        $user = new User();
+        $user->createObject($viewed);
+
+        $worker = null;
+        $tasksForDropdown = [];
+
+
+        if ($user->IsWorker()) {
+            $worker = \models\Worker::selectByUserId($user->id);
+
+        }
+
+
+        $current = User::GetUser();
+        if ($current && $current->IsCostumer()) {
+            $rawTasks = Tasks::selectByCondition(['id_costumer' => ['=', $current->id]]) ?? [];
+            foreach ($rawTasks as $t) {
+                $tasksForDropdown[] = $t;
             }
-            return $this->render(['user'=>$userObj], 'views/users/view.php');
-        }
-        else{
-            Messages::addMessage('Немає Id');
         }
 
+        return $this->render([
+            'user'           => $user,
+            'worker'            => $worker,
+            'tasksForDropdown'  => $tasksForDropdown,
+        ], 'views/users/view.php');
     }
-    public function actionGfgf()
-    {
-        return $this->render();
-    }
+
 }
