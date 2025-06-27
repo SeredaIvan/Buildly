@@ -23,7 +23,7 @@ $Title = 'Find All ';
                         </div>
                     </div>
                     <p><strong><?= htmlspecialchars($worker->pay_per_hour) ?> грн/год</strong></p>
-                    <button class="btn btn-warning w-100">Замовити</button>
+                    <a href="/users/see/<?php echo $worker->id_user?>" class="btn btn-warning w-100">Переглянути акаунт</a>
                 </div>
             </div>
         </div>
