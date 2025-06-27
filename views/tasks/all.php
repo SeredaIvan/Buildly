@@ -1,3 +1,7 @@
+<?php
+use models\User;
+use models\Worker;
+?>
 <div class="container my-4">
     <h2>Усі завдання</h2>
 
@@ -28,6 +32,22 @@
                         <p><?= htmlspecialchars($task['description']) ?></p>
                         <p><strong><?= $task['cost'] ?> грн</strong></p>
                         <p><small><?= $task['date'] ?></small></p>
+                        <?php if(!empty($task['id_worker'])):?>
+                            <p class="red"><small>Завдання в роботі</small></p>
+                        <?php else:?>
+                            <?php $user=User::GetUser()?>
+                            <?php if ($user->IsWorker()):?>
+                            <?php
+                                $worker=Worker::selectByUserId($user->id);
+
+                            ?>
+                                <form action="/offers/offerjob" method="post">
+                                    <input type="hidden" name="task_id" value="<?= $task['id'] ?>">
+                                    <input type="hidden" name="worker_id" value="<?= $worker->id ?>">
+                                    <button type="submit" class="btn btn-warning">Запропонувати кандидатуру</button>
+                                </form>
+                            <?php endif;?>
+                        <?php endif;?>
                     </div>
                 </div>
             <?php endforeach; ?>

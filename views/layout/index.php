@@ -68,14 +68,13 @@ use core\Config;
         <?php endif; ?>
     </header>
 </div>
-
 <?php
 \core\Messages::writeMessages();
 ?>
-
 <main>
     <?= $Content ?? 'Default Content' ?>
 </main>
+
 <footer class="container py-5">
     <div class="footer-div"></div>
     <div class="row">

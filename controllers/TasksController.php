@@ -11,6 +11,7 @@ use models\User;
 
 class TasksController extends Controller
 {
+
     public function actionAdd()
     {
         $user = User::GetUser();

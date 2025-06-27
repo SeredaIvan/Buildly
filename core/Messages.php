@@ -18,6 +18,7 @@ class Messages
     public static function writeMessages()
     {
         $messages = \core\Messages::getMessages();
+
         if (!empty($messages)) {
             foreach ($messages as $mess) {
                 echo $mess;

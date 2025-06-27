@@ -40,10 +40,12 @@
 
                                     <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-warning">Замовити роботу</button>
 
-                                <form action="/workers/offerWork">
-                                    <select></select>
-                                    <input type="hidden">
-                                </form>
+                                <!--<form action="/offers/offerjob" method="post">
+                                    <input type="hidden" name="task_id" value="<?php echo $task['id']?>">
+                                    <input type="hidden" name="costumer_id" value="<?php $user->id ?? ''?>">
+                                    <input type="hidden" name="worker_id" value="<?php $worker->id ?? ''?>">
+                                    <button type="submit" class="btn btn-warning">Запропонувати кандидатуру</button>
+                                </form>-->
                             </div>
                         <?php endif; ?>
                     </div>
