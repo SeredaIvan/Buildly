@@ -30,15 +30,16 @@ use core\Config;
             <?php if (!\models\User::IsLogged()): ?>
                 <li><a href="/register/" class="nav-link px-2 link-dark">Стати спеціалістом</a></li>
             <?php elseif ($user->IsWorker()): ?>
-                <li><a href="#" class="nav-link px-2 link-dark">Знайти роботу</a></li>
+                <li><a href="/tasks/all" class="nav-link px-2 link-dark">Знайти роботу</a></li>
+                <li><a href="/offers/index" class="nav-link px-2 link-dark">Сповіщення</a></li>
 
             <?php elseif ($user->IsCostumer()): ?>
                 <li><a href="/worker/findAll" class="nav-link px-2 link-dark">Всі спеціалісти</a></li>
                 <li><a href="/worker/findByCategories" class="nav-link px-2 link-dark">Знайти спеціаліста </a></li>
                 <li><a href="/tasks/add" class="nav-link px-2 link-dark">Додати завдання </a></li>
                 <li><a href="/categories/viewAll" class="nav-link px-2 link-dark">Категорії</a></li>
+                <li><a href="/offers/index" class="nav-link px-2 link-dark">Сповіщення</a></li>
             <?php endif; ?>
-            <li><a href="/about" class="nav-link px-2 link-dark">Про нас</a></li>
         </ul>
 
         <?php if (!\models\User::IsLogged()): ?>

@@ -33,6 +33,30 @@
         <input type="number" class="form-control" id="cost" name="cost"
                value="<?= htmlspecialchars($oldData['cost'] ?? '') ?>" step="0.01" min="0" required>
     </div>
+    <div class="mb-3">
+        <label for="city" class="form-label">Місто</label>
+        <input type="text" class="form-control" id="city" name="city"
+               value="<?= htmlspecialchars($oldData['city'] ?? '') ?>" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="category" class="form-label">Категорія</label>
+        <select class="form-select" id="category" name="category" required>
+            <option value="">Оберіть категорію</option>
+            <?php
+            $categories = \core\Config::getInstance()->paramsCategories[0] ?? [];
+            foreach ($categories as $group => $items):
+                foreach ($items as $item):
+                    $selected = (isset($oldData['category']) && $oldData['category'] === $item) ? 'selected' : '';
+                    $formatted = mb_strtoupper(mb_substr($item, 0, 1, "UTF-8"), "UTF-8") . mb_substr($item, 1, null, "UTF-8");
+                    ?>
+                    <option value="<?= htmlspecialchars($item) ?>" <?= $selected ?>>
+                        <?= htmlspecialchars($formatted) ?>
+                    </option>
+                <?php endforeach;
+            endforeach; ?>
+        </select>
+    </div>
 
     <div class="mb-3">
         <label for="date" class="form-label">Дата виконання</label>

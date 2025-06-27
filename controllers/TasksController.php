@@ -27,6 +27,8 @@ class TasksController extends Controller
             $description = trim($post->getOne('description'));
             $cost = $post->getOne('cost');
             $date = $post->getOne('date');
+            $city = trim($post->getOne('city'));
+            $category = trim($post->getOne('category'));
 
             $errors = [];
 
@@ -41,6 +43,12 @@ class TasksController extends Controller
             }
             if (empty($date)) {
                 $errors[] = 'Дата обовʼязкова';
+            }
+            if (empty($city)) {
+                $errors[] = 'Місто обовʼязкове';
+            }
+            if (empty($category)) {
+                $errors[] = 'Категорія обовʼязкова';
             }
 
             if (!empty($errors)) {
@@ -59,10 +67,10 @@ class TasksController extends Controller
             $task->id_costumer = $user->id;
             $task->id_worker = null;
             $task->id_brigade = null;
+            $task->city = $city;
+            $task->category = $category;
 
-            $result = $task->save();
-
-            if ($result) {
+            if ($task->save()) {
                 Messages::addMessage('Завдання успішно створено', 'alert-success');
                 $this->redirect('/');
             } else {
@@ -77,28 +85,28 @@ class TasksController extends Controller
 
         return $this->render(['user' => $user]);
     }
+
     public function actionAll()
     {
         $user = \models\User::GetUser();
-        $get = new \core\Get();
+        $get  = new \core\Get();
 
         $filters = [
-            'cost_min' => $get->arr['cost_min'] ?? null,
-            'cost_max' => $get->arr['cost_max'] ?? null,
-            'date'     => $get->arr['date'] ?? null,
+            'cost_min'  => $get->arr['cost_min']  ?? null,
+            'cost_max'  => $get->arr['cost_max']  ?? null,
+            'date'      => $get->arr['date']      ?? null,
+            'city'      => $get->arr['city']      ?? null,
+            'category'  => $get->arr['category']  ?? null,
         ];
 
         $taskModel = new \models\Tasks();
         $tasks = $taskModel->findAllWithFilters($filters);
 
         return $this->render([
-            'user' => $user,
+            'user'    => $user,
             'filters' => $filters,
-            'tasks' => $tasks,
+            'tasks'   => $tasks,
         ]);
     }
-
-
-
 
 }
