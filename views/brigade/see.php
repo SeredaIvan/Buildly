@@ -29,6 +29,35 @@ $this->Title = "Бригада №" . htmlspecialchars($brigade->id);
 
     <?php endif;?>
     <?php endif; ?>
+    <?php if (!empty($members) && $user && $user->IsCostumer() && !empty($tasksForDropdown)): ?>
+        <h3 class="mt-4">Запропонувати роботу бригаді</h3>
+        <form action="/offers/offerjob" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="task_id" class="form-label">Оберіть ваше завдання</label>
+                    <select name="task_id" id="task_id" class="form-select" required>
+                        <option value="" disabled selected>Оберіть завдання…</option>
+                        <?php foreach ($tasksForDropdown as $task): ?>
+                            <option value="<?= htmlspecialchars($task['id']) ?>">
+                                <?= htmlspecialchars($task['short_text']) ?> (<?= htmlspecialchars($task['date']) ?>, <?= htmlspecialchars($task['cost']) ?>₴)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            </div>
+
+            <?php foreach ($members as $worker): ?>
+                <input type="hidden" name="worker_ids[]" value="<?= htmlspecialchars($worker->id) ?>">
+            <?php endforeach; ?>
+
+            <input type="hidden" name="costumer_id" value="<?= htmlspecialchars($user->id) ?>">
+            <input type="hidden" name="brigadecall" value= "1">
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-warning">Запропонувати бригаді завдання</button>
+            </div>
+        </form>
+    <?php endif; ?>
 
     <?php if (!empty($members)): ?>
         <h3 class="mt-4">Члени бригади</h3>

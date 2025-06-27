@@ -16,6 +16,7 @@ Messages::writeMessages();
         <div class="list-group mb-5">
             <?php foreach ($offersForCostumer as $offer): ?>
                 <?php $workerUser = $offer['workerUser'] ?? null; ?>
+
                 <div class="list-group-item d-flex justify-content-between align-items-center">
                     <div>
                         <a href="/tasks/view/<?= htmlspecialchars($offer['id_task'] ?? '') ?>">
@@ -35,7 +36,10 @@ Messages::writeMessages();
                         <?php else: ?>
                             <span class="text-danger">Виконавець відмовив</span>
                         <?php endif; ?>
+
+
                     </div>
+
                     <div>
                         <?php if (isset($offer['is_accepted']) && $offer['is_accepted'] == 1): ?>
                             <span class="badge bg-success">Прийнято</span>
@@ -78,6 +82,10 @@ Messages::writeMessages();
                             </a>
                         <?php else: ?>
                             <span class="text-danger">Замовник відмовив</span>
+                        <?php endif; ?>
+                        <?php if ($offer['brigadecall']==1): ?>
+                            <span class="m-2 badge bg-info text-black"> Бригадна пропозиція</span>
+
                         <?php endif; ?>
                     </div>
                     <div>

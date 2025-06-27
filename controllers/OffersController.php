@@ -16,53 +16,57 @@ class OffersController extends Controller
     {
         $post = new Post();
         $taskId = $post->getOne('task_id');
-        $workerId = $post->getOne('worker_id');
+        $workerIds = $post->getAll()['worker_ids'] ?? [];
         $costumerId = $post->getOne('costumer_id');
+        $brigadecallFlag = $post->getOne('brigadecall');
 
-        if (empty($taskId) || empty($workerId)) {
-            Messages::addMessage('Недостатньо даних для створення пропозиції.', 'alert-danger');
+        if (empty($taskId) || empty($workerIds)) {
+            Messages::addMessage('Недостатньо даних для створення пропозицій.', 'alert-danger');
             $this->redirect('/tasks/all');
             return;
         }
 
-        $isFromWorker = empty($costumerId);
+        $brigadecallFlag = ($brigadecallFlag == '1') ? 1 : 0;
 
-        if ($isFromWorker) {
-            $task = Tasks::selectById($taskId);
-            if (!$task || empty($task['id_costumer'])) {
-                Messages::addMessage('Завдання не знайдено або немає замовника.', 'alert-danger');
-                $this->redirect('/tasks/all');
-                return;
+        $success = 0;
+        $skipped = 0;
+
+        foreach ($workerIds as $workerId) {
+            $existing = \models\Offers::selectByCondition([
+                'id_task'     => ['=', $taskId],
+                'id_worker'   => ['=', $workerId],
+                'id_costumer' => ['=', $costumerId],
+            ]);
+
+            if (!empty($existing)) {
+                $skipped++;
+                continue;
             }
-            $costumerId = $task['id_costumer'];
+
+            $offer = new \models\Offers();
+            $offer->id_task = $taskId;
+            $offer->id_worker = $workerId;
+            $offer->id_costumer = $costumerId;
+            $offer->dateOffer = date('Y-m-d');
+            $offer->brigadecall = $brigadecallFlag;
+
+            if ($offer->save()) {
+                $success++;
+            }
         }
 
-        // Перевірка на існуючу пропозицію
-        $existing = Offers::selectByCondition([
-            'id_task' => ['=', $taskId],
-            'id_worker' => ['=', $workerId],
-            'id_costumer' => ['=', $costumerId],
-        ]);
-
-        if (!empty($existing)) {
-            Messages::addMessage('Пропозиція вже існує.', 'alert-warning');
-            $this->redirect('/tasks/all');
-            return;
+        if ($success > 0) {
+            Messages::addMessage("Успішно надіслано $success пропозицій.", 'alert-success');
         }
-
-        $offer = new Offers();
-        $offer->id_task = $taskId;
-        $offer->id_worker = $workerId;
-        $offer->id_costumer = $costumerId;
-        $offer->dateOffer = date('Y-m-d');
-
-        if ($offer->save()) {
-            Messages::addMessage('Пропозицію надіслано.', 'alert-success');
-        } else {
-            Messages::addMessage('Не вдалося зберегти пропозицію.', 'alert-danger');
+        if ($skipped > 0) {
+            Messages::addMessage("$skipped пропозицій пропущено — вже існують.", 'alert-warning');
+        }
+        if ($success === 0 && $skipped === 0) {
+            Messages::addMessage('Жодну пропозицію не вдалося надіслати.', 'alert-danger');
         }
 
         $this->redirect('/tasks/all');
+
     }
 
 
@@ -167,6 +171,11 @@ class OffersController extends Controller
         $offer->is_accepted = 1;
 
         if ($offer->save()) {
+            $task=new Tasks();
+            $taskRaw=Tasks::selectById($offer->id_task);
+            $task->createObject($taskRaw);
+            $task->id_worker=$offer->id_worker;
+            $task->save();
             Messages::addMessage('Пропозицію прийнято.', 'alert-success');
         } else {
             Messages::addMessage('Не вдалося оновити пропозицію.', 'alert-danger');

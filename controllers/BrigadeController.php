@@ -6,6 +6,7 @@ use core\Controller;
 use core\Messages;
 use core\Post;
 use models\Brigade;
+use models\Tasks;
 use models\Worker;
 use models\User;
 
@@ -60,17 +61,16 @@ class BrigadeController extends Controller
             $id = $id[0];
         }
 
-        // 1) Отримуємо бригаду
+
         $brigadeData = Brigade::selectById((int)$id);
         if (!$brigadeData) {
             Messages::addMessage('Бригада не знайдена', 'alert-danger');
             return $this->redirect('/brigades');
         }
-        // Преобразуємо масив у модель
+
         $brigade = new Brigade();
         $brigade->createObject($brigadeData);
 
-        // 2) Перевірка, чи поточний виконавець вже приєднаний
         $user     = User::GetUser();
         $isJoined = false;
         if ($user && $user->IsWorker()) {
@@ -80,7 +80,7 @@ class BrigadeController extends Controller
             }
         }
 
-        // 3) Завантажуємо всіх воркерів, в яких id_brigade = $brigade->id
+
         $rawMembers = Worker::selectByCondition(['id_brigade' => ['=', $brigade->id]]) ?? [];
         $members    = [];
         foreach ($rawMembers as $row) {
@@ -89,11 +89,21 @@ class BrigadeController extends Controller
             $members[] = $w;
         }
 
+        $tasksForDropdown = [];
+
+        if ($user && $user->IsCostumer()) {
+            $rawTasks = Tasks::selectByCondition(['id_costumer' => ['=', $user->id]]) ?? [];
+            foreach ($rawTasks as $t) {
+                $tasksForDropdown[] = $t;
+            }
+        }
+
         return $this->render([
-            'brigade'  => $brigade,
-            'isJoined' => $isJoined,
-            'user'     => $user,
-            'members'  => $members,
+            'brigade'          => $brigade,
+            'isJoined'         => $isJoined,
+            'user'             => $user,
+            'members'          => $members,
+            'tasksForDropdown' => $tasksForDropdown,
         ]);
     }
 

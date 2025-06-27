@@ -130,7 +130,7 @@
                                         <?php endforeach;?>
 
                                 </div>
-                                <?php elseif (empty($worker)):?>
+                                <?php elseif (empty($worker) ):?>
                                     <div class="col-sm-8 content-center">
                                         <p class="mb-0"> Ви не завершили реєстрацію спеціаліста</p>
                                     </div>
